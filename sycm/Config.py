@@ -19,8 +19,8 @@ HEADER = {
 
 LOGIN_USER = {
     'act': 'login',
-    'TPL_username': '深圳***旅游专营店:数据8',
-    'TPL_password': '****'
+    'TPL_username': '深圳优克联旅游专营店:数据8',
+    'TPL_password': 'zhengjiang2018'
 }
 
 ''' MySQL Config  '''
