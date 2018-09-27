@@ -19,8 +19,8 @@ HEADER = {
 
 LOGIN_USER = {
     'act': 'login',
-    'TPL_username': '***',
-    'TPL_password': '***'
+    'TPL_username': 'XXXX旅游专营店:数据8',
+    'TPL_password': 'XXXX'
 }
 
 ''' MySQL Config  '''
@@ -29,3 +29,27 @@ DB_USER = 'jiang'
 DB_PWD = 'jiang'
 DB_NAME = 'market'
 DB_CHARSET = 'utf8'
+
+
+OMS_LOGIN_USER = {
+    'loginCustomerId': '',
+    'partnerCode': 'GTBU',
+    'password': "cbc8f5435c87e13c5d14e6ce92358d68",
+    'streamNo': 'web_bss1537952014250849915',
+    'userCode': 'zhengjiang'
+}
+
+OMS_HEADER = {
+    'Accept': '*/*',
+    # 'Accept-Encoding': 'gzip, deflate, br',
+    'Accept-Language': 'zh-CN',
+    'Connection': 'keep-alive',
+    'Content-Length': '153',
+    'Content-Type': 'application/json;charset=UTF-8',
+    # 'Cookie': 'JSESSIONID=CAA981241F16BA5905EE35EA4DA63F16; access_token=6430913028599e3cd3ef904f26525e7e; loginCustomerId=6074c6aa3488f3c2dddff2a7ca821aab; language=zh-CN; username=zhengjiang',
+    'Host': 'order.roamingman.com.cn',
+    'Origin': 'https://order.roamingman.com.cn',
+    'Referer': 'https://order.roamingman.com.cn/login?redirect=%252Fhome%252FhomePage',
+    'Time-Zone': 'GMT8',
+    'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36'
+}
