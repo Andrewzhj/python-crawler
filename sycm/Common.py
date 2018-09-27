@@ -41,7 +41,7 @@ class Common(object):
 
     @staticmethod
     def get_last_saturday():
-        currentDay = datetime.date.today()
+        currentDay = datetime.datetime.today()
         while currentDay.weekday() != calendar.SATURDAY:
             currentDay -= datetime.timedelta(days=-1)
         return currentDay
