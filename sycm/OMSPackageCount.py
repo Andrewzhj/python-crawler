@@ -30,7 +30,7 @@ params = {
 query = {
     'appid': "6074c6aa3488f3c2dddff2a7ca821aab",
     'currentPage': 1,
-    'endDate': '1539100800000',
+    'endDate': 1539100800000,
     'loginCustomerId': "6074c6aa3488f3c2dddff2a7ca821aab",
     'partnerCode': "GTBU",
     'perPageCount': 10,
@@ -51,27 +51,21 @@ class OMSPackageCount(object):
         url = "https://order.roamingman.com.cn/oms/loginforoms/login"
         data = json.dumps(params)
         data = bytes(data, 'utf8')
-        # req = urllib.request.Request(url, headers=self._header)
-        # result = urllib.request.urlopen(req, data).read().decode('utf-8')
-        # print(result)
 
-        cookie_filename = 'cookie.txt'
-        cookie = http.cookiejar.MozillaCookieJar(cookie_filename)
         req = urllib.request.Request(url, headers=self._header)
         result = urllib.request.urlopen(req, data).read().decode('utf-8')
         print(result)
-        cookie.save(ignore_discard=True, ignore_expires=True)
+        result_json = json.loads(result)
+        print(result_json['data']["appid"])
 
-        handler = urllib.request.HTTPCookieProcessor(cookie)
-        opener = urllib.request.build_opener(handler)
         _package_count_url = "https://order.roamingman.com.cn/oms/package/packageCount"
         query_data = json.dumps(query)
+        query_data['appid'] = str(result_json['data']["appid"])
+        print(query_data)
         query_data = bytes(query_data, 'utf8')
-        _request = urllib.request.Request(_package_count_url, headers=self._header)
-        response = opener.open(_request).read().decode('utf-8')
-        # _req = urllib.request.Request(_package_count_url, headers=self._header)
-        # _result = urllib.request.urlopen(_req, query_data).read().decode('utf-8')
-        print(response)
+        _req = urllib.request.Request(_package_count_url, headers=self._header)
+        _result = urllib.request.urlopen(_req, query_data).read().decode('utf-8')
+        print(_result)
 
 
 
