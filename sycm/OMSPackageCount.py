@@ -13,8 +13,6 @@ sys.path.append("../")
 import pymysql
 import urllib.parse
 import urllib.request
-import http.cookiejar
-
 from sycm import Config as config
 
 
@@ -48,27 +46,65 @@ class OMSPackageCount(object):
         self._header = config.OMS_HEADER
 
     def fetchCookie(self):
-        url = "https://order.roamingman.com.cn/oms/loginforoms/login"
-        data = json.dumps(params)
-        data = bytes(data, 'utf8')
+        # url = "https://order.roamingman.com.cn/oms/loginforoms/login"
+        # data = json.dumps(params)
+        # data = bytes(data, 'utf8')
+        #
+        # req = urllib.request.Request(url, headers=self._header)
+        # result = urllib.request.urlopen(req, data).read().decode('utf-8')
+        # print(result)
+        # result_json = json.loads(result)
+        # print(result_json['data']["appid"])
+        pass
 
-        req = urllib.request.Request(url, headers=self._header)
-        result = urllib.request.urlopen(req, data).read().decode('utf-8')
-        print(result)
-        result_json = json.loads(result)
-        print(result_json['data']["appid"])
-
+    def fetchPackageCount(self):
         _package_count_url = "https://order.roamingman.com.cn/oms/package/packageCount"
         query_data = json.dumps(query)
-        query_data['appid'] = str(result_json['data']["appid"])
-        print(query_data)
         query_data = bytes(query_data, 'utf8')
         _req = urllib.request.Request(_package_count_url, headers=self._header)
         _result = urllib.request.urlopen(_req, query_data).read().decode('utf-8')
-        print(_result)
+        _json = json.loads(_result)
+        for item in _json['data']['dataList']:
+            # level 1 data
+            level = 1
+            packageName = item['packageName']
+            dataMap = item['dataMap']
+            self.loopDataMap(packageName, level, dataMap)
 
+            dtos = item['dtos']
+            if dtos:
+                for childItem in dtos:
+                    level = 2
+                    packageName = childItem['packageName']
+                    childData = childItem['dataMap']
+                    self.loopDataMap(packageName, level, childData)
+
+    def loopDataMap(self, packageName, level, dataMap):
+        for key, value in dataMap.items():
+            self.inputdb(packageName, level, key, value)
+
+    def inputdb(self, packageName, level, countDate, packageNum):
+        sql = ""
+        if self.checkIfNotExist(packageName, level, countDate):
+            _sql = "INSERT INTO oms_package_count (packageName, level, packageNum, countDate) VALUES ('%s', '%s', '%s', '%s')"
+            sql = _sql % (packageName, level, packageNum, countDate)
+        else:
+            _sql = "UPDATE oms_package_count SET packageNum='%s'  WHERE packageName='%s' AND level='%s' AND countDate='%s'"
+            sql = _sql % (packageNum, packageName, level, countDate)
+        # print(sql)
+        self.executeSQL(sql)
+
+    def checkIfNotExist(self, packageName, level, countDate):
+        sql = "SELECT COUNT(1) rowCount FROM oms_package_count WHERE packageName='%s' AND level='%s' AND countDate='%s'" % (packageName, level, countDate)
+        self._cursor.execute(sql)
+        rowCount = self._cursor.fetchone()
+        return rowCount[0] == 0
+
+    def executeSQL(self, sql):
+        self._cursor.execute(sql)
+        self._db.commit()
 
 
 if __name__ == '__main__':
     oms = OMSPackageCount()
-    oms.fetchCookie()
+    oms.fetchPackageCount()

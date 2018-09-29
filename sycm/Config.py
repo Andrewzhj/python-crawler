@@ -46,7 +46,7 @@ OMS_HEADER = {
     'Connection': 'keep-alive',
     'Content-Length': '153',
     'Content-Type': 'application/json;charset=UTF-8',
-    # 'Cookie': 'JSESSIONID=CAA981241F16BA5905EE35EA4DA63F16; access_token=6430913028599e3cd3ef904f26525e7e; loginCustomerId=6074c6aa3488f3c2dddff2a7ca821aab; language=zh-CN; username=zhengjiang',
+    'Cookie': 'JSESSIONID=26EF9DFE331507BF2AF586CB62B0A1E5; _pk_ses.5.28f1=*; access_token=55d373937bf9a03c8a8d058698286a68; loginCustomerId=6074c6aa3488f3c2dddff2a7ca821aab; language=zh-CN; username=zhengjiang; _pk_id.5.28f1=892e0a81039226b9.1538202825.1.1538202860.1538202825.',
     'Host': 'order.roamingman.com.cn',
     'Origin': 'https://order.roamingman.com.cn',
     'Referer': 'https://order.roamingman.com.cn/login?redirect=%252Fhome%252FhomePage',

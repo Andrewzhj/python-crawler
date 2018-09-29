@@ -9,6 +9,7 @@
 '''
 import calendar
 import datetime
+from pytz import timezone
 
 class Common(object):
 
@@ -46,13 +47,11 @@ class Common(object):
             currentDay -= datetime.timedelta(days=-1)
         return currentDay
 
+    @staticmethod
+    def get_timestamp_date():
+        return datetime.datetime.utcfromtimestamp(Common.now_date_time())
+
 if __name__ == '__main__':
-    test_date = Common.get_date_time('2018-08-11')
-    sunday_date = Common.get_date_time('2018-08-12')
-    start_date = Common.get_last_6_date(sunday_date)
-    print(sunday_date)
-    print(start_date)
-    print(test_date > start_date)
-    print(test_date < sunday_date)
-    if start_date <= test_date and test_date < sunday_date:
-        print("ok")
+    saturday = Common.get_timestamp_date()
+    print(saturday)
+
