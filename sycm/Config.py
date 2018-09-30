@@ -36,7 +36,7 @@ OMS_LOGIN_USER = {
     'partnerCode': 'GTBU',
     'password': "cbc8f5435c87e13c5d14e6ce92358d68",
     'streamNo': 'web_bss1537952014250849915',
-    'userCode': 'zhengjiang'
+    'userCode': '...'
 }
 
 OMS_HEADER = {

@@ -58,6 +58,7 @@ class OMSPackageCount(object):
         pass
 
     def fetchPackageCount(self):
+        self._header['Cookie']='B6E168D370690515EF43FC84097E9197'
         _package_count_url = "https://order.roamingman.com.cn/oms/package/packageCount"
         query_data = json.dumps(query)
         query_data = bytes(query_data, 'utf8')

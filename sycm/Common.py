@@ -9,7 +9,6 @@
 '''
 import calendar
 import datetime
-from pytz import timezone
 
 class Common(object):
 
@@ -48,10 +47,20 @@ class Common(object):
         return currentDay
 
     @staticmethod
-    def get_timestamp_date():
-        return datetime.datetime.utcfromtimestamp(Common.now_date_time())
+    def get_last10_day():
+        current_date = datetime.datetime.today()
+        return current_date + datetime.timedelta(days=-10)
+
+    @staticmethod
+    def get_future10_day():
+        current_date = datetime.datetime.today()
+        return current_date + datetime.timedelta(days=10)
 
 if __name__ == '__main__':
-    saturday = Common.get_timestamp_date()
-    print(saturday)
+    currentTime = Common.get_last10_day()
+    print(currentTime)
+    print(str(round(currentTime.timestamp())))
+    currentTime = Common.get_future10_day()
+    print(currentTime)
+    print(str(round(currentTime.timestamp())))
 
