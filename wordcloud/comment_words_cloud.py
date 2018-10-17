@@ -14,7 +14,7 @@ import pandas as pd
 from pymongo import MongoClient
 import numpy
 from PIL import Image
-# import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 import os
 
 '''
@@ -35,18 +35,15 @@ def word_cloud():
             words_df = words_df.append(pd.DataFrame({str(producer): segment}), sort=True)
 
         # 去掉停用词
-        # stopwords = pd.read_csv("stopwords.csv", index_col=False, quoting=3, sep="\t", names=['stopword'],
-        #                         encoding='utf-8')  # quoting=3全不引用
-        # print(stopwords.stopword)
-        # words_df = words_df[~words_df.segment.isin(stopwords.stopword)]
-        # words_df = words_df[~words_df[str(o['producer'])].isin(stopwords.stopword)]
-
+        stopwords = pd.read_csv("stopwords.csv", index_col=False, quoting=3, sep="\t", names=['stopword'],
+                                encoding='utf-8')  # quoting=3全不引用
+        words_df = words_df[~words_df[str(producer)].isin(stopwords.stopword)]
         words_stat = words_df.groupby(by=[str(producer)])[str(producer)].agg({numpy.size})
         words_stat.columns = ['计数']
         words_stat = words_stat.reset_index().sort_values(by=["计数"], ascending=False)
         # print(words_stat.head(100))
         print("---------分割线-----------")
-        bg_pic = numpy.array(Image.open("romingman.png"))
+        bg_pic = numpy.array(Image.open("test.jpg"))
         # 用词云进行显示
         word_cloud = WordCloud(
             font_path="msyh.ttf",
@@ -55,7 +52,8 @@ def word_cloud():
             width=2000,
             height=1800,
             mask=bg_pic,
-            mode="RGBA"
+            mode="RGBA",
+            margin=2
         )
         word_frequence = {x[0]: x[1] for x in words_stat.head(1000).values}
         # print(word_frequence)
@@ -79,6 +77,7 @@ def word_cloud():
             os.mkdir(dir_path)
         file_name = dir_path + "/" + producer + '.png'
         word_cloud.to_file(file_name)  # 把词云保存下来
+        # return
 
 
 if __name__ == '__main__':
