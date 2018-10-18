@@ -7,3 +7,14 @@
 @desc:
 @note:
 '''
+
+import requests
+session = requests.Session()
+
+class Common(object):
+    def __init__(self):
+        pass
+
+    @staticmethod
+    def getRequestSession():
+        return session
