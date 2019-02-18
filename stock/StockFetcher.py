@@ -29,6 +29,10 @@ class StockFetcher(object):
             for x in html[0].find_all('li'):
                 print(x)
 
+    def stockeDetail(self):
+        url = "http://pdfm.eastmoney.com/EM_UBG_PDTI_Fast/api/js?rtntype=5&token=4f1862fc3b5e77c150a2b985b12db0fd&cb=jQuery18308531276643182979_1546666707617&id=3007452&type=k&authorityType=&_=1546666741955"
+        
+
 
 if __name__ == '__main__':
     fetcher = StockFetcher()
