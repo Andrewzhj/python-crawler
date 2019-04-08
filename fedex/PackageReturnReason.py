@@ -8,6 +8,7 @@ import requests
 
 FEDEX_URL = "https://www.fedex.com/trackingCal/track"
 
+
 QUERY_PARAMETER = {
     "data": "{\"TrackPackagesRequest\":{\"appType\":\"WTRK\",\"appDeviceType\":\"DESKTOP\",\"supportHTML\":true,\"supportCurrentLocation\":true,\"uniqueKey\":\"\",\"processingParameters\":{},\"trackingInfoList\":[{\"trackNumberInfo\":{\"trackingNumber\":\"74890983235134819120\",\"trackingQualifier\":\"\",\"trackingCarrier\":\"\"}}]}}",
     "action": "trackpackages",
@@ -16,7 +17,6 @@ QUERY_PARAMETER = {
     "format": "json",
     "perPageCount": 10
 }
-
 FEDEX_HEADER = {
     'Accept': '*/*',
     # 'Accept-Encoding': 'gzip, deflate, br',
@@ -32,18 +32,25 @@ FEDEX_HEADER = {
 }
 
 
-def fetch():
+def fetch(trackingNumber):
+    data = "{\"TrackPackagesRequest\":{\"appType\":\"WTRK\",\"appDeviceType\":\"DESKTOP\",\"supportHTML\":true,\"supportCurrentLocation\":true,\"uniqueKey\":\"\",\"processingParameters\":{},\"trackingInfoList\":[{\"trackNumberInfo\":{\"trackingNumber\":\"" + trackingNumber + "\",\"trackingQualifier\":\"\",\"trackingCarrier\":\"\"}}]}}"
+    QUERY_PARAMETER["data"] = data
     result = requests.post(FEDEX_URL, data=QUERY_PARAMETER, headers=FEDEX_HEADER)
     result_json = json.loads(result.text)
     package_list = result_json["TrackPackagesResponse"]["packageList"]
+    reason = trackingNumber
     for package_info in package_list:
         event_list = package_info.get("scanEventList")
         for event in event_list:
             scan_details = event.get("scanDetails")
-            details = scan_details.strip()
+            details = scan_details.strip().lower()
             if details is "" or len(details) == 0:
                 continue
-            print(details)
+            reason = reason + "--->" + details
+    return reason
 
-
-fetch()
+trackingNumberList = (61290983235121827170,74890983235134819120,74890983235151803737,74890983235145459780,74890983235145451708,74890983235136225417,74890983235153424268,61290983235153906850,74890983235127703719,74890983235135198354,61290983235153663746,74890983235149627000,61290983235144561099,61290983235129756427)
+for trackingNumber in trackingNumberList:
+    reason = fetch(str(trackingNumber))
+    sql = "INSERT INTO fedex_track(tracking_number, reason) VALUE('%s', '%s');" %(trackingNumber, reason)
+    print(sql)
