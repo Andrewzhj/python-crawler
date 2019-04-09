@@ -5,9 +5,15 @@
 # @File    : packageReturnReason
 import json
 import requests
+import time
+
+import pymysql
+
+# db = pymysql.connect("10.202.4.174", "root", "root", "fedex", charset='utf8')
+db = pymysql.connect("10.118.53.92", "root", "123456", "fedex", charset='utf8', port=3307)
+cursor = db.cursor()
 
 FEDEX_URL = "https://www.fedex.com/trackingCal/track"
-
 
 QUERY_PARAMETER = {
     "data": "{\"TrackPackagesRequest\":{\"appType\":\"WTRK\",\"appDeviceType\":\"DESKTOP\",\"supportHTML\":true,\"supportCurrentLocation\":true,\"uniqueKey\":\"\",\"processingParameters\":{},\"trackingInfoList\":[{\"trackNumberInfo\":{\"trackingNumber\":\"74890983235134819120\",\"trackingQualifier\":\"\",\"trackingCarrier\":\"\"}}]}}",
@@ -17,6 +23,7 @@ QUERY_PARAMETER = {
     "format": "json",
     "perPageCount": 10
 }
+
 FEDEX_HEADER = {
     'Accept': '*/*',
     # 'Accept-Encoding': 'gzip, deflate, br',
@@ -31,8 +38,17 @@ FEDEX_HEADER = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36'
 }
 
+def executeSQL(sql):
+    cursor.execute(sql)
+    db.commit()
+
+
+def close():
+    cursor.close()
+    db.close()
 
 def fetch(trackingNumber):
+    trackingNumber = trackingNumber.strip()
     data = "{\"TrackPackagesRequest\":{\"appType\":\"WTRK\",\"appDeviceType\":\"DESKTOP\",\"supportHTML\":true,\"supportCurrentLocation\":true,\"uniqueKey\":\"\",\"processingParameters\":{},\"trackingInfoList\":[{\"trackNumberInfo\":{\"trackingNumber\":\"" + trackingNumber + "\",\"trackingQualifier\":\"\",\"trackingCarrier\":\"\"}}]}}"
     QUERY_PARAMETER["data"] = data
     result = requests.post(FEDEX_URL, data=QUERY_PARAMETER, headers=FEDEX_HEADER)
@@ -49,8 +65,29 @@ def fetch(trackingNumber):
             reason = reason + "--->" + details
     return reason
 
-trackingNumberList = (61290983235121827170,74890983235134819120,74890983235151803737,74890983235145459780,74890983235145451708,74890983235136225417,74890983235153424268,61290983235153906850,74890983235127703719,74890983235135198354,61290983235153663746,74890983235149627000,61290983235144561099,61290983235129756427)
-for trackingNumber in trackingNumberList:
-    reason = fetch(str(trackingNumber))
-    sql = "INSERT INTO fedex_track(tracking_number, reason) VALUE('%s', '%s');" %(trackingNumber, reason)
-    print(sql)
+# trackingNumberList = (61290983235121827170,74890983235134819120,74890983235151803737,74890983235145459780,74890983235145451708,74890983235136225417,74890983235153424268,61290983235153906850,74890983235127703719,74890983235135198354,61290983235153663746,74890983235149627000,61290983235144561099,61290983235129756427)
+# for trackingNumber in trackingNumberList:
+#     reason = fetch(str(trackingNumber))
+#     sql = "INSERT INTO fedex_track(tracking_number, reason) VALUE('%s', '%s');" %(trackingNumber, reason)
+#     print(sql)
+
+def updateReason():
+    query_sql = "select Service_number from fedex_dec where Reasons IS NULL order by Service_number desc"
+    cursor.execute(query_sql)
+    seviceNumber = cursor.fetchall()
+    count = 0
+    for number in seviceNumber:
+        traceNumber = number[0]
+        reason = fetch(number)
+        if reason is "" or len(reason) == 0:
+            print("reason is null")
+            reason = "false"
+        print(reason)
+        _sql = "UPDATE fedex_dec SET Reasons='%s' WHERE Service_number='%s'" % (reason, traceNumber)
+        count += 1
+        executeSQL(_sql)
+        # time.sleep(1)
+        print(count)
+    close()
+
+updateReason()
